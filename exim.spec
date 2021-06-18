@@ -12,7 +12,7 @@
 %global app                     exim
 %global user                    %{app}
 %global group                   %{app}
-%global release_prefix          100
+%global release_prefix          101
 
 Name:                           exim
 Version:                        4.94.2
@@ -526,6 +526,9 @@ fi
 
 
 %changelog
+* Fri Jun 18 2021 Package Store <kitsune.solar@gmail.com> - 4.94.2-101
+- UPD: New build for latest changes.
+
 * Thu Jun 17 2021 Package Store <kitsune.solar@gmail.com> - 4.94.2-100
 - UPD: Move to GitHub.
 - UPD: License.
