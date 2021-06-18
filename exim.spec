@@ -1,27 +1,29 @@
 # By default build clamav subpackage on Fedora,
-# do not build on RHEL
+# do not build on RHEL.
 %if 0%{?rhel}
 %bcond_with clamav
 %else
 %bcond_without clamav
 %endif
 
-# hardened build if not overridden
+# Hardened build if not overridden.
 %{!?_hardened_build:%global _hardened_build 1}
 
 %global app                     exim
 %global user                    %{app}
 %global group                   %{app}
-%global release_prefix          101
+%global release_prefix          102
 
 Name:                           exim
 Version:                        4.94.2
 Release:                        %{release_prefix}%{?dist}
 Summary:                        The exim mail transfer agent
 License:                        GPLv2+
-URL:                            https://exim.org/
+URL:                            https://exim.org
+Vendor:                         Package Store <https://pkgstore.github.io>
+Packager:                       Kitsune Solar <kitsune.solar@gmail.com>
 
-Source:                         https://ftp.exim.org/pub/exim/exim4/exim-%{version}.tar.xz
+Source0:                        https://ftp.exim.org/pub/exim/exim4/exim-%{version}.tar.xz
 Source1:                        https://ftp.exim.org/pub/exim/exim4/%{name}-%{version}.tar.xz.asc
 Source2:                        https://downloads.exim.org/Exim-Maintainers-Keyring.asc
 
@@ -58,9 +60,9 @@ BuildRequires:                  libXaw-devel libXmu-devel libXext-devel libX11-d
 BuildRequires:                  perl-devel
 BuildRequires:                  perl-generators
 BuildRequires:                  libICE-devel libXpm-devel libXt-devel perl(ExtUtils::Embed)
-# mariadb-devel for mariadb pkgconfig
+# mariadb-devel for mariadb pkgconfig.
 BuildRequires:                  systemd-units libgsasl-devel mariadb-devel
-# Workaround for NIS removal from glibc, bug 1534920
+# Workaround for NIS removal from glibc, bug 1534920.
 BuildRequires:                  libnsl2-devel libtirpc-devel
 BuildRequires:                  gnupg2 grep
 %if 0%{?rhel} == 8
@@ -88,7 +90,7 @@ mail. Exim can be installed in place of sendmail, although the
 configuration of exim is quite different to that of sendmail.
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# Package:
+# Package: mysql
 # -------------------------------------------------------------------------------------------------------------------- #
 
 %package mysql
@@ -99,7 +101,7 @@ Requires:                       exim = %{version}-%{release}
 This package contains the MySQL lookup module for Exim
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# Package:
+# Package: pgsql
 # -------------------------------------------------------------------------------------------------------------------- #
 
 %package pgsql
@@ -110,7 +112,7 @@ Requires:                       exim = %{version}-%{release}
 This package contains the PostgreSQL lookup module for Exim
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# Package:
+# Package: mon
 # -------------------------------------------------------------------------------------------------------------------- #
 
 %package mon
@@ -125,7 +127,7 @@ interface.
 %if %{with clamav}
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# Package:
+# Package: clamav
 # -------------------------------------------------------------------------------------------------------------------- #
 
 %package clamav
@@ -153,7 +155,7 @@ http://www.exim.org/exim-html-%{version}/doc/html/spec_html/ch41.html
 %endif
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# Package:
+# Package: greylist
 # -------------------------------------------------------------------------------------------------------------------- #
 
 %package greylist
@@ -200,7 +202,7 @@ greylisting unconditional.
 %{__sed} -i 's@^# AUTH_LIBS=-lsasl2@AUTH_LIBS=-lsasl2@' Local/Makefile
 %{__cp} exim_monitor/EDITME Local/eximon.conf
 
-# Workaround for rhbz#1791878
+# Workaround for rhbz#1791878.
 pushd doc
 for f in $( ls -dp cve-* | grep -v '/\|\(\.txt\)$' ); do
   mv "${f}" "${f}.txt"
@@ -281,7 +283,7 @@ pod2man --center=EXIM --section=8 \
 %{__mkdir_p} %{buildroot}%{_sysconfdir}/sysconfig
 %{__install} -m 644 %SOURCE3 %{buildroot}%{_sysconfdir}/sysconfig/exim
 
-# Systemd
+# Systemd.
 %{__mkdir_p} %{buildroot}%{_unitdir}
 %{__mkdir_p} %{buildroot}%{_libexecdir}
 %{__install} -m 644 %{SOURCE24} %{buildroot}%{_unitdir}
@@ -297,12 +299,12 @@ pod2man --center=EXIM --section=8 \
 %{__mkdir_p} %{buildroot}%{_sysconfdir}/cron.daily
 %{__install} -m 0755 %SOURCE5 %{buildroot}%{_sysconfdir}/cron.daily/exim-tidydb
 
-# generate ghost .pem file
+# Generate ghost .pem file.
 %{__mkdir_p} %{buildroot}/etc/pki/tls/{certs,private}
 touch %{buildroot}/etc/pki/tls/{certs,private}/exim.pem
 %{__chmod} 600 %{buildroot}/etc/pki/tls/{certs,private}/exim.pem
 
-# generate alternatives ghosts
+# Generate alternatives ghosts.
 %{__mkdir_p} %{buildroot}%{_mandir}/man1
 for i in %{_sbindir}/sendmail %{_bindir}/{mailq,runq,rsmtp,rmail,newaliases} \
   /usr/lib/sendmail %{_sysconfdir}/pam.d/smtp
@@ -336,7 +338,7 @@ EOF
 touch %{buildroot}%{_var}/log/clamd.exim
 %endif
 
-# Set up the greylist subpackage
+# Set up the greylist subpackage.
 %{__install} -m 644 %{SOURCE20} %{buildroot}/%_sysconfdir/exim/exim-greylist.conf.inc
 %{__install} -m 644 %{SOURCE21} %{buildroot}/%_sysconfdir/exim/mk-greylist-db.sql
 %{__mkdir_p} %{buildroot}/%_sysconfdir/cron.daily
@@ -526,6 +528,9 @@ fi
 
 
 %changelog
+* Fri Jun 18 2021 Package Store <kitsune.solar@gmail.com> - 4.94.2-102
+- UPD: Add "Vendor" & "Packager" fields.
+
 * Fri Jun 18 2021 Package Store <kitsune.solar@gmail.com> - 4.94.2-101
 - UPD: New build for latest changes.
 
