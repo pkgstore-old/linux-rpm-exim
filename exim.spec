@@ -48,7 +48,7 @@ Patch4:                         exim-4.94.2-opendmarc-1.4-build-fix.patch
 
 Requires:                       /etc/pki/tls/certs /etc/pki/tls/private
 Requires:                       /etc/aliases
-Requires:                       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
+Requires:                       perl(:MODULE_COMPAT_%(eval "$( %{__perl} -V:version )"; echo ${version}))
 Recommends:                     publicsuffix-list
 BuildRequires:                  gcc libdb-devel openssl-devel openldap-devel pam-devel
 BuildRequires:                  pcre-devel sqlite-devel cyrus-sasl-devel
@@ -315,7 +315,7 @@ gzip < /dev/null > %{buildroot}%{_mandir}/man1/mailq.1.gz
 # Munge the clamav init and config files from clamav-devel. This really ought
 # to be a subpackage of clamav, but this hack will have to do for now.
 function clamsubst() {
-  %{__sed} -e "s!<SERVICE>!$3!g;s!<USER>!$4!g;""$5" %{_docdir}/clamd/"$1" >"$RPM_BUILD_ROOT$2"
+  %{__sed} -e "s!<SERVICE>!$3!g;s!<USER>!$4!g;""$5" %{_docdir}/clamd/"$1" >"%{buildroot}$2"
 }
 
 %{__mkdir_p} %{buildroot}%{_sysconfdir}/clamd.d
@@ -379,16 +379,16 @@ exit 0
 
 %preun
 %systemd_preun %{name}.service
-if [[ $1 = 0 ]]; then
+if [[ ${1} = 0 ]]; then
   %{_sbindir}/alternatives --remove mta %{_sbindir}/sendmail.exim
 fi
 
 
 %postun
 %systemd_postun_with_restart %{name}.service
-if [[ $1 -ge 1 ]]; then
-  mta=`readlink /etc/alternatives/mta`
-  if [[ "$mta" == "%{_sbindir}/sendmail.exim" ]]; then
+if [[ ${1} -ge 1 ]]; then
+  mta=$( readlink /etc/alternatives/mta )
+  if [[ "${mta}" == "%{_sbindir}/sendmail.exim" ]]; then
     /usr/sbin/alternatives --set mta %{_sbindir}/sendmail.exim
   fi
 fi
@@ -487,13 +487,13 @@ fi
 /bin/touch %{_var}/log/clamd.exim
 /bin/chown exim.exim %{_var}/log/clamd.exim
 /sbin/restorecon %{_var}/log/clamd.exim
-if [[ $1 -eq 1 ]]; then
+if [[ ${1} -eq 1 ]]; then
   /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 fi
 
 
 %preun clamav
-if [[ $1 = 0 ]]; then
+if [[ ${1} = 0 ]]; then
   /bin/systemctl --no-reload clamd.exim.service > /dev/null 2>&1 || :
   /bin/systemctl stop clamd.exim.service > /dev/null 2>&1 || :
 fi
@@ -501,7 +501,7 @@ fi
 
 %postun clamav
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
-if [[ $1 -ge 1 ]]; then
+if [[ ${1} -ge 1 ]]; then
   /bin/systemctl try-restart clamd.exim.service >/dev/null 2>&1 || :
 fi
 
@@ -584,24 +584,24 @@ fi
 - Workaround for upgrade conflict
   Resolves: rhbz#1791878
 
-* Fri Mar 13 2020 Package Store <pkgstore@pm.me> - 4.93-100
+* Fri Mar 13 2020 Package Store <kitsune.solar@gmail.com> - 4.93-100
 - NEW: v4.93.
 
-* Tue Oct 15 2019 Package Store <pkgstore@pm.me> - 4.92.3-101
+* Tue Oct 15 2019 Package Store <kitsune.solar@gmail.com> - 4.92.3-101
 - UPD: Enabled local_scan.
 - UPD: Dropped sysvinit artifacts.
 
-* Wed Oct 03 2019 Package Store <pkgstore@pm.me> - 4.92.3-100
+* Wed Oct 03 2019 Package Store <kitsune.solar@gmail.com> - 4.92.3-100
 - NEW: v4.92.3.
 - FIX: rhbz#1742312.
 - FIX: CVE-2019-15846.
 - FIX: CVE-2019-16928.
 - FIX: rhbz#1756656.
 
-* Fri Jul 26 2019 Package Store <pkgstore@pm.me> - 4.92.1-100
+* Fri Jul 26 2019 Package Store <kitsune.solar@gmail.com> - 4.92.1-100
 - NEW: Exim 4.92.1.
 
-* Thu Jul 25 2019 Package Store <pkgstore@pm.me> - 4.92-100
+* Thu Jul 25 2019 Package Store <kitsune.solar@gmail.com> - 4.92-100
 - UPD: MARKETPLACE.
 - UPD: master-1135c8.
 
