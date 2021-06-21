@@ -8,6 +8,7 @@
 
 ```
 $ dnf copr enable pkgstore/exim
+$ dnf install -y exim
 ```
 
 ### Open Build Service (OBS)
