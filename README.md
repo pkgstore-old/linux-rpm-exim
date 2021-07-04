@@ -23,6 +23,13 @@ $ dnf install -y exim
 $ dnf upgrade -y exim
 ```
 
+## Remove
+
+```
+$ dnf erase -y exim
+$ dnf copr remove pkgstore/exim
+```
+
 ## How to Build
 
 1. Get source from [src.fedoraproject.org](https://src.fedoraproject.org/rpms/exim).
